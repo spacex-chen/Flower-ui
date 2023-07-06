@@ -3,19 +3,19 @@
     <el-row>
       <el-col :span="24">
         <ul>
-          <li>
+          <li v-if="store.state.NickName == undefined" @click="OpenLogin">
             <el-link :underline="false">登录</el-link>
           </li>
-          <li>
+          <li v-if="store.state.NickName == undefined" @click="OpenRegister">
             <el-link :underline="false">注册</el-link>
           </li>
-          <li> 
-            <el-link :underline="false">张三</el-link>
+          <li v-if="store.state.NickName != undefined"> 
+            <el-link :underline="false">{{store.state.NickName}}</el-link>
           </li>
-          <li>
-            <el-link :underline="false">个人中心</el-link>
+          <li v-if="store.state.NickName != undefined">
+            <el-link :underline="false" href="/personcenter">个人中心</el-link>
           </li>
-          <li>
+          <li v-if="store.state.NickName != undefined" @click="LogOut">
             <el-link :underline="false">注销</el-link>
           </li>
         </ul>
@@ -50,7 +50,7 @@
     </el-row>
     <el-row>
       <el-col :span="18">
-        <el-menu :default-active="activeIndex"  class="el-menu-header" mode="horizontal" router>
+        <el-menu :default-active="$route.path"  :default-openeds="['1']" class="el-menu-header" mode="horizontal" :router="true">
           <el-menu-item index="/">首页</el-menu-item>
           <el-menu-item index="/loveflower">爱情鲜花</el-menu-item>
           <el-menu-item index="/birthdayflower">生日鲜花</el-menu-item>
@@ -60,10 +60,30 @@
       </el-col>
     </el-row>
   </div>
+  <LoginCom/>
+  <RegistryCom/>
 </template>
 
 <script setup lang="ts">
+import LoginCom from './LoginCom.vue';
+import RegistryCom from './RegistryCom.vue';
+import { useStore } from 'vuex'
 
+const store = useStore()
+const OpenLogin = () => {
+  store.commit('OpenLogin')
+}
+
+const OpenRegister = () => {
+  store.commit('OpenRegister')
+}
+
+const LogOut=()=>{
+  //清理vuex状态 //清理localStorage
+  localStorage.removeItem('NickName');
+  localStorage.removeItem('token');
+  store.commit('SettingNickName', undefined)
+}
 </script>
 
 <style lang="scss">
@@ -103,7 +123,7 @@ ul {
   margin-left: 30% !important;
   border-bottom: 0px !important;
   .el-menu-item {
-    width: 170px !important;
+    width: 150px !important;
   }
 }
 </style>
